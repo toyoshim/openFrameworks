@@ -56,6 +56,7 @@
 #else
 #include "Poco/RWLock_POSIX.h"
 #endif
+#endif
 
 
 namespace Poco {
