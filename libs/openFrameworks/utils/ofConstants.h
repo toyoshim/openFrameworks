@@ -31,6 +31,8 @@ enum ofLoopType{
 #elif defined (ANDROID)
 	#define TARGET_ANDROID
 	#define TARGET_OPENGLES
+#elif defined (__native_client__)
+        #define TARGET_NACL
 #else
 	#define TARGET_LINUX
 #endif
@@ -143,6 +145,18 @@ enum ofLoopType{
 	#include <GLES/glext.h>
 
 	#define TARGET_LITTLE_ENDIAN
+#endif
+
+#ifdef TARGET_NACL
+        // GLES2 is not compatible to GL1.
+        // include just to pass compile.
+        #include <GLES2/gl2.h>
+        #include <GLES2/gl2ext.h>
+        #define GL_POINT 0
+        #define GL_LINE 1
+        #define GL_FILL 2
+
+        #define TARGET_LITTLE_ENDIAN
 #endif
 
 #ifdef TARGET_OPENGLES
