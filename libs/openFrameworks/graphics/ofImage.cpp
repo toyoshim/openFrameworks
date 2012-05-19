@@ -877,6 +877,7 @@ bool ofImage_<PixelType>::isUsingTexture(){
 //------------------------------------
 template<typename PixelType>
 void ofImage_<PixelType>::grabScreen(int _x, int _y, int _w, int _h){
+#if !defined(TARGET_NACL)
 
 	allocate(_w, _h, OF_IMAGE_COLOR);
 
@@ -910,6 +911,7 @@ void ofImage_<PixelType>::grabScreen(int _x, int _y, int _w, int _h){
 	}
 	delete [] tempLineOfPix;
 	update();
+#endif
 }
 
 //------------------------------------

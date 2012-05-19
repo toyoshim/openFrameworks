@@ -17,6 +17,9 @@
 #ifdef TARGET_LINUX
 	#include <GL/glut.h>
 #endif
+#ifdef TARGET_NACL
+	#include "../../glut/include/glut.h"
+#endif
 
 
 // glut works with static callbacks UGH, so we need static variables here:

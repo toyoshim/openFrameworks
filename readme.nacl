@@ -1,0 +1,38 @@
+oF for Google Native Client
+===========================
+
+a) preparation
+--------------
+
+install sdk:
+
+Download the Native Client SDK from the following site and follow the
+instructions to set up.
+> https://developers.google.com/native-client/sdk/download
+
+
+install libraries:
+
+Install Mesa-7.6 headers using naclports.
+> http://code.google.com/p/naclports/
+
+    $ make NACL_PACKAGES_BITSIZE=64 mesa
+    $ make NACL_PACKAGES_BITSIZE=32 mesa
+
+
+b) installation
+---------------
+
+build the oF library:
+
+    $ cd your_oF_directory/libs/openFrameworksCompiled/project/nacl
+    $ make ReleaseNaCl32
+    $ make ReleaseNaCl64
+
+build an example:
+
+    $ cd your_oF_directory/apps/examples/fooBar
+    $ ln -s ../../../scripts/nacl/template/config.make .
+    $ ln -s ../../../scripts/nacl/template/Makefile .
+    $ make ReleaseNaCl32
+    $ make ReleaseNaCl64
