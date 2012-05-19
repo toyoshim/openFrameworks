@@ -81,30 +81,38 @@ void ofResetElapsedTimeCounter(){
  * 32-bit, where the GLUT API return value is also overflowed.
  */
 unsigned long ofGetSystemTime( ) {
-	#ifndef TARGET_WIN32
-		struct timeval now;
-		gettimeofday( &now, NULL );
-		return now.tv_usec/1000 + now.tv_sec*1000;
-	#else
+	#if defined(TARGET_WIN32)
 		#if defined(_WIN32_WCE)
 			return GetTickCount();
 		#else
 			return timeGetTime();
 		#endif
+	#elif defined(TARGET_NACL)
+		struct timespec now;
+		clock_gettime(0, &now);
+		return now.tv_nsec/1000000 + now.tv_sec*1000;
+	#else
+		struct timeval now;
+		gettimeofday( &now, NULL );
+		return now.tv_usec/1000 + now.tv_sec*1000;
 	#endif
 }
 
 unsigned long ofGetSystemTimeMicros( ) {
-	#ifndef TARGET_WIN32
-		struct timeval now;
-		gettimeofday( &now, NULL );
-		return now.tv_usec + now.tv_sec*1000000;
-	#else
+	#if defined(TARGET_WIN32)
 		#if defined(_WIN32_WCE)
 			return GetTickCount()*1000;
 		#else
 			return timeGetTime()*1000;
 		#endif
+	#elif defined(TARGET_NACL)
+		struct timespec now;
+		clock_gettime(0, &now);
+		return now.tv_nsec/1000 + now.tv_sec*1000000;
+	#else
+		struct timeval now;
+		gettimeofday( &now, NULL );
+		return now.tv_usec + now.tv_sec*1000000;
 	#endif
 }
 

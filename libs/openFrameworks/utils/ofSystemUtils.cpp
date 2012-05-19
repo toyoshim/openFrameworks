@@ -498,3 +498,5 @@ ofFileDialogResult ofSystemSaveDialog(string defaultName, string messageName){
 	return results;
 }
 
+#if defined(TARGET_NACL)
+#endif
