@@ -37,7 +37,28 @@ ifeq ($(findstring Android,$(MAKECMDGOALS)),Android)
 endif
 
 ifeq ($(findstring NaCl,$(MAKECMDGOALS)),NaCl)
-	ARCH = nacl
+	ifndef NACL_SDK_ROOT
+		$(error NACL_SDK_ROOT not set)
+	endif
+	OS_NAME = $(shell uname -s)
+	ifeq ($(OS_NAME),Darwin)
+		OS_SUBDIR = mac
+	else ifeq ($(OS_NAME), Linux)
+		OS_SUBDIR = linux
+	else ifneq (, $(filter CYGWIN%,$(OS_NAME)))
+		OS_SUBDIR = win
+	else
+		$(error No support for the Operating System: $(OS_NAME))
+	endif
+	NACL_TOOLCHAIN_ROOT = $(NACL_SDK_ROOT)/toolchain/$(OS_SUBDIR)_x86_newlib
+	ifeq ($(findstring 32,$(MAKECMDGOALS)),32)
+		ARCH = nacl
+	else
+		ARCH = nacl64
+	endif
+	COMPILER_OPTIMIZATION = -finline-functions -funroll-all-loops
+	POCOFLAGS = -DPOCO_NACL -DPOCO_NACL_NEWLIB -DPOCO_NO_SYS_SELECT_H -DPOCO_NO_SIGNAL_HANDLER -DPOCO_NO_SHAREDMEMORY -DPOCO_NO_FPENVIRONMENT -DPOCO_THREAD_PRIORITY_MIN=0 -DPOCO_THREAD_PRIORITY_MAX=31
+	SYSFLAGS = -D_XOPEN_SOURCE=500 -D_REENTRANT -D_THREAD_SAFE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 endif
 
 ifeq ($(ARCH),android)
@@ -71,7 +92,13 @@ ifeq ($(ARCH),android)
 	CFLAGS += -I"$(NDK_ROOT)/platforms/$(NDK_PLATFORM)/arch-arm/usr/include" -I"$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/include/" -I"$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/libs/armeabi/include"
 	CFLAGS += -DANDROID
 else ifeq ($(ARCH),nacl)
-	CXX = i686-nacl-g++
+	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/i686-nacl-g++
+	CFLAGS += -m32 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
+	LIBSPATH=nacl
+else ifeq ($(ARCH),nacl64)
+	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/x86_64-nacl-g++
+	CFLAGS += -m64 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
+	LIBSPATH=nacl64
 else
 	CXX =  g++
 	ARCH = $(shell uname -m)
@@ -102,6 +129,7 @@ INCLUDES_FLAGS = $(addprefix -I,$(INCLUDES))
 INCLUDES_FLAGS += -I$(OF_ROOT)/libs/poco/include
 ifeq ($(ARCH),android)
 	INCLUDES_FLAGS += -I$(OF_ROOT)/libs/glu/include_android
+else ifeq ($(ARCH),nacl)
 else
  	INCLUDES_FLAGS += -I$(OF_ROOT)/libs/glu/include
 	INCLUDES_FLAGS += $(shell pkg-config  glew gstreamer-0.10 gstreamer-video-0.10 gstreamer-base-0.10 libudev --cflags)
@@ -121,7 +149,11 @@ else
 endif
 LIB_STATIC = $(shell ls $(OF_ROOT)/libs/*/lib/$(LIBSPATH)/*.a  2> /dev/null | grep -v openFrameworksCompiled | grep -v Poco)
 LIB_SHARED = $(shell ls $(OF_ROOT)/libs/*/lib/$(LIBSPATH)/*.so  2> /dev/null | grep -v openFrameworksCompiled | sed "s/.*\\/lib\([^/]*\)\.so/-l\1/")
-LIB_STATIC += $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoNet.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoXML.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoUtil.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoFoundation.a
+ifeq ($(findstring nacl,$(ARCH)),nacl)
+	LIB_STATIC += $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoXML.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoUtil.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoFoundation.a
+else
+	LIB_STATIC += $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoNet.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoXML.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoUtil.a $(OF_ROOT)/libs/poco/lib/$(LIBSPATH)/libPocoFoundation.a
+endif
 LIB_PATHS_FLAGS = $(shell ls -d $(OF_ROOT)/libs/*/lib/$(LIBSPATH) | sed "s/\(\.*\)/-L\1/")
 
 CFLAGS += -Wall -fexceptions
@@ -303,7 +335,9 @@ AndroidRelease:
 
 DebugNaCl: $(TARGET)
 
-ReleaseNaCl: $(TARGET)
+ReleaseNaCl32: $(TARGET)
+
+ReleaseNaCl64: $(TARGET)
 
 #This rule does the compilation
 #$(OBJS): $(SOURCES)

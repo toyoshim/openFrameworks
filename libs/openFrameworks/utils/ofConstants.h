@@ -155,6 +155,8 @@ enum ofLoopType{
         #define GL_POINT 0
         #define GL_LINE 1
         #define GL_FILL 2
+        #define GL_RGB8 -1
+        #define GL_TEXTURE_RECTANGLE_ARB -1
 
         #define TARGET_LITTLE_ENDIAN
 #endif
@@ -222,7 +224,7 @@ typedef TESSindex ofIndexType;
 #if !defined(OF_VIDEO_PLAYER_GSTREAMER) && !defined(OF_VIDEO_PLAYER_IPHONE) && !defined(OF_VIDEO_PLAYER_QUICKTIME)
 	#ifdef TARGET_LINUX
 		#define OF_VIDEO_PLAYER_GSTREAMER
-	#else
+	#elif !defined(TARGET_NACL)
 		#ifdef TARGET_OF_IPHONE
 			#define OF_VIDEO_PLAYER_IPHONE
 		#elif !defined(TARGET_ANDROID)

@@ -25,13 +25,14 @@
 
 //--------------------------
 // communication
-#if !defined( TARGET_OF_IPHONE ) & !defined(TARGET_ANDROID)
+#if !defined(TARGET_OF_IPHONE) && !defined(TARGET_ANDROID) && !defined(TARGET_NACL)
 	#include "ofSerial.h"
 	#include "ofArduino.h"
 #endif
 
 //--------------------------
 // gl
+#if !defined(TARGET_NACL)
 #include "ofFbo.h"
 #include "ofGLRenderer.h"
 #include "ofGLUtils.h"
@@ -41,6 +42,7 @@
 #include "ofTexture.h"
 #include "ofVbo.h"
 #include "ofVboMesh.h"
+#endif
 
 //--------------------------
 // graphics

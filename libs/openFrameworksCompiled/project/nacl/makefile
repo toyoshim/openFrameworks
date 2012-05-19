@@ -87,7 +87,7 @@ else ifeq ($(ARCH),nacl)
 	CFLAGS += -m32 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
 	LIBSPATH=nacl
 else ifeq ($(ARCH),nacl64)
-	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/i686-nacl-g++
+	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/x86_64-nacl-g++
 	CFLAGS += -m64 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
 	LIBSPATH=nacl64
 else
