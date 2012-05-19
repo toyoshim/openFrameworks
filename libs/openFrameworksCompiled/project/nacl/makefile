@@ -100,15 +100,11 @@ else
 	endif
 endif
 
-ifeq ($(findstring nacl,$(ARCH)),nacl)
-	SOURCE_DIRS = $(shell find ../../../openFrameworks -maxdepth 1 -mindepth 1 -type d | grep -v 3d | grep -v gl | grep -v app | grep -v communication | grep -v graphics | grep -v video)
-else
-	SOURCE_DIRS = $(shell find ../../../openFrameworks -maxdepth 1 -mindepth 1 -type d )
-endif
+SOURCE_DIRS = $(shell find ../../../openFrameworks -maxdepth 1 -mindepth 1 -type d )
 ifeq ($(ARCH),android)
 	SOURCES = $(shell find $(SOURCE_DIRS) -name "*.cpp" | grep -v "ofAppGlutWindow.cpp" | grep -v ofGstVideoPlayer.cpp | grep -v ofQuickTimeGrabber.cpp | grep -v ofVideoPlayer.cpp | grep -v ofGstVideoGrabber.cpp | grep -v ofSoundPlayer.cpp | grep -v ofOpenALSoundPlayer.cpp)
 else ifeq ($(findstring nacl,$(ARCH)),nacl)
-	SOURCES = $(shell find $(SOURCE_DIRS) -name "*.cpp" | grep -v "ofURLFileLoader.cpp" | grep -v "ofUtils.cpp")
+	SOURCES = $(shell find $(SOURCE_DIRS) -name "*.cpp" | grep -v ofURLFileLoader.cpp | grep -v ofUtils.cpp | grep -v ofDirectShowGrabber.cpp | grep -v ofGstUtils.cpp | grep -v ofGstVideoGrabber.cpp | grep -v ofGstVideoPlayer.cpp | grep -v ofQuickTimeGrabber.cpp | grep -v ofQuickTimePlayer.cpp | grep -v ofVideoGrabber.cpp | grep -v ofVideoPlayer.cpp | grep -v ofBitmapFont.cpp | grep -v ofCairoRenderer.cpp | grep -v ofGraphics.cpp | grep -v ofImage.cpp | grep -v ofTrueTypeFont.cpp | grep -v ofArduino.cpp | grep -v ofSerial.cpp | grep -v ofAppGlutWindow.cpp | grep -v ofAppRunner.cpp | grep -v ofCamera.cpp | grep -v ofNode.cpp | grep -v ofFbo.cpp | grep -v ofGLRenderer.cpp | grep -v ofLight.cpp | grep -v ofMaterial.cpp | grep -v ofShader.cpp | grep -v ofTexture.cpp | grep -v ofVbo.cpp | grep -v ofVboMesh.cpp)
 else
 	SOURCES = $(shell find $(SOURCE_DIRS) -name "*.cpp") 
 endif
