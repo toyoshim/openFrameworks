@@ -85,10 +85,12 @@ ifeq ($(ARCH),android)
 else ifeq ($(ARCH),nacl)
 	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/i686-nacl-g++
 	CFLAGS += -m32 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
+	AR = $(NACL_TOOLCHAIN_ROOT)/bin/i686-nacl-ar
 	LIBSPATH=nacl
 else ifeq ($(ARCH),nacl64)
 	CXX = $(NACL_TOOLCHAIN_ROOT)/bin/x86_64-nacl-g++
 	CFLAGS += -m64 $(POCOFLAGS) $(SYSFLAGS) -Dsigjmp_buf=jmp_buf -Dsiglongjmp=longjmp
+	AR = $(NACL_TOOLCHAIN_ROOT)/bin/x86_64-nacl-ar
 	LIBSPATH=nacl64
 else
 	CXX =  g++

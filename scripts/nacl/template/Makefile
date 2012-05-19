@@ -129,7 +129,7 @@ INCLUDES_FLAGS = $(addprefix -I,$(INCLUDES))
 INCLUDES_FLAGS += -I$(OF_ROOT)/libs/poco/include
 ifeq ($(ARCH),android)
 	INCLUDES_FLAGS += -I$(OF_ROOT)/libs/glu/include_android
-else ifeq ($(ARCH),nacl)
+else ifeq ($(findstring nacl,$(ARCH)),nacl)
 else
  	INCLUDES_FLAGS += -I$(OF_ROOT)/libs/glu/include
 	INCLUDES_FLAGS += $(shell pkg-config  glew gstreamer-0.10 gstreamer-video-0.10 gstreamer-base-0.10 libudev --cflags)
@@ -166,6 +166,8 @@ CFLAGS += $(CORE_INCLUDE_FLAGS)
 ifeq ($(ARCH),android)
 	LDFLAGS = --sysroot=$(SYSROOT) -nostdlib -L"$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/libs/armeabi"
 	SYSTEMLIBS += -lstdc++ -lsupc++ -lgcc -lz -lGLESv1_CM -llog -ldl -lm -lc
+else ifeq ($(findstring nacl,$(ARCH)),nacl)
+	SYSTEMLIBS += -lpthread
 else
 	LDFLAGS = -Wl,-rpath=./libs
 	SYSTEMLIBS += $(shell pkg-config  jack glew gstreamer-0.10 gstreamer-video-0.10 gstreamer-base-0.10 gstreamer-app-0.10 libudev cairo --libs)
